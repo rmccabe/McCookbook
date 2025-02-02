@@ -45,7 +45,16 @@ pip install \
   plotly \                # Interactive plots & dashboards
   sentry-sdk \            # Error monitoring / alerting
   cx_Oracle \             # Oracle DB driver (requires Oracle client libs)
-  PyMySQL                 # MySQL/MariaDB driver
+  PyMySQL \               # MySQL/MariaDB driver
+  pandas-datareader \     #FRED
+  bls-api \               #Bureau of Labor Statistics (BLS)
+  wbdata \                #World Bank, IMF
+  alpha_vantage \         #FOREX
+  ccxt \                  #Crypto/Binance
+  pandasdmx \             #IMF
+  glassnode \             #Crypto market data
+  tk \                    #Not sure?
+
 
 # 3. Post-install notes / system dependencies:
 echo ""

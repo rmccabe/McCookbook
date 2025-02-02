@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+single_window_ticker_gui.py
+
+A tkinter GUI to fetch stock data (via yfinance) for a user-specified ticker
+and time period. The Matplotlib chart is displayed in the SAME window (no pop-up).
+
+Usage:
+    python single_window_ticker_gui.py
+"""
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+import yfinance as yf
+
+import matplotlib
+matplotlib.use("TkAgg")  # Use the TkAgg backend for embedding in tkinter
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+def update_plot():
+    """
+    Fetches data for the specified ticker and period from the GUI entries,
+    then updates the Matplotlib figure embedded in the tkinter window.
+    """
+    ticker = ticker_entry.get().strip()
+    period = period_var.get()
+
+    if not ticker:
+        messagebox.showwarning("Input Error", "Please enter a valid ticker symbol.")
+        return
+
+    try:
+        data = yf.Ticker(ticker).history(period=period)
+    except Exception as e:
+        messagebox.showerror("Data Fetch Error", f"Failed to download data:\n{e}")
+        return
+
+    if data.empty:
+        messagebox.showinfo("No Data", f"No data returned for '{ticker}' with period '{period}'.")
+        return
+
+    # Clear the Axes for a fresh plot
+    ax.clear()
+
+    # Use 'Adj Close' if available, else 'Close'
+    price_col = "Adj Close" if "Adj Close" in data.columns else "Close"
+
+    # Plot the data
+    ax.plot(data.index, data[price_col], label=f"{ticker} ({period})", color="blue")
+    ax.set_title(f"{ticker} Price Over {period}")
+    ax.set_xlabel("Date")
+    ax.set_ylabel(f"{price_col} (USD)")
+    ax.legend()
+    ax.grid(True)
+
+    # Refresh the canvas
+    canvas.draw()
+
+
+def main():
+    # Create the main application window
+    root = tk.Tk()
+    root.title("Stock Data Plotter (Single-Window GUI)")
+
+    # --- 1) INPUT FRAME ------------------------------------------------------
+    input_frame = ttk.Frame(root)
+    input_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+    # Ticker Label + Entry
+    ttk.Label(input_frame, text="Stock Ticker:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+
+    global ticker_entry
+    ticker_entry = ttk.Entry(input_frame, width=15)
+    ticker_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    # Period Label + Dropdown
+    ttk.Label(input_frame, text="Time Period:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+
+    # Some common yfinance periods
+    time_periods = ["1d", "5d", "1mo", "3mo", "6mo", "1y", "5y", "ytd", "max"]
+
+    global period_var
+    period_var = tk.StringVar(value="1mo")  # default selection
+
+    dropdown = ttk.OptionMenu(input_frame, period_var, "1mo", *time_periods)
+    dropdown.grid(row=1, column=1, padx=5, pady=5)
+
+    # Plot Button
+    plot_btn = ttk.Button(input_frame, text="Plot Data", command=update_plot)
+    plot_btn.grid(row=2, column=0, columnspan=2, pady=10)
+
+    # --- 2) MATPLOTLIB FIGURE/CANVAS -----------------------------------------
+    # Create a figure and an axis object
+    global fig, ax
+    fig = plt.Figure(figsize=(8, 5), dpi=100)
+    ax = fig.add_subplot(111)
+
+    # Embed the figure in a FigureCanvasTkAgg widget
+    global canvas
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas_widget = canvas.get_tk_widget()
+    canvas_widget.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+
+    # Make the grid expand with the window size
+    root.rowconfigure(1, weight=1)
+    root.columnconfigure(0, weight=1)
+
+    # Start the Tkinter event loop
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
