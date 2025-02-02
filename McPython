@@ -1,3 +1,0 @@
-x = 2
-
-print("Hello World" + str(x))
