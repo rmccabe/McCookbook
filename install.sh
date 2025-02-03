@@ -54,7 +54,8 @@ pip install \
   pandasdmx \             #IMF
   glassnode \             #Crypto market data
   tk \                    #Not sure?
-
+  pyinstaller \           #This will let us create executable python scripts
+  pyshortcuts \           #Create windows shortcuts
 
 # 3. Post-install notes / system dependencies:
 echo ""
@@ -67,3 +68,6 @@ echo "  - docker: Requires Docker Engine installed & running."
 echo "  - cryptography: May require development headers (e.g., libssl-dev)."
 echo "  - Others (Paramiko, etc.) may also require system libs depending on your OS."
 echo "================================================="
+
+#pyinstaller --onefile --windowed macroMarketData.py
+

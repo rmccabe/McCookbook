@@ -146,6 +146,7 @@ ttk.Label(input_frame, text="Stock Ticker:", font=("Arial", 12)).grid(row=0, col
 ticker_entry = ttk.Entry(input_frame, width=15, font=("Arial", 12))
 ticker_entry.insert(0, "AAPL")  # Prepopulate with "AAPL"
 ticker_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+ticker_entry.bind("<Return>", lambda event: update_plot())
 
 ttk.Label(input_frame, text="Time Period:", font=("Arial", 12)).grid(row=1, column=0, padx=5, pady=5, sticky="e")
 time_periods = ["1mo", "3mo", "6mo", "1y", "5y", "ytd", "max"]
